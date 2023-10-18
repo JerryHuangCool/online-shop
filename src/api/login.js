@@ -24,3 +24,22 @@ export function sendCode (tel, key, imgCode) {
     }
   })
 }
+
+export function userLogin (tel, smsCode) {
+  return request({
+    url: '/passport/login',
+    method: 'post',
+    headers: {
+      platform: 'H5'
+    },
+    data: {
+      form: {
+        mobile: tel,
+        smsCode: smsCode,
+        isParty: false,
+        partyData: {}
+      }
+
+    }
+  })
+}

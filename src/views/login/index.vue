@@ -20,21 +20,23 @@
           <img :src="imgCode.base64" alt="" @click="reloadCode" v-show="imgCode">
         </div>
         <div class="form-item">
-          <input class="inp" placeholder="请输入短信验证码" type="text">
+          <input class="inp" placeholder="请输入短信验证码" type="text" v-model="smsCode">
           <p v-if="flag">重新发送({{countdown}})秒</p>
           <button @click="getMsgCode" v-else>获取验证码</button>
         </div>
       </div>
-      <div class="login-btn">登录</div>
+      <div class="login-btn" @click="login">登录</div>
     </div>
   </div>
 </template>
 
 <script>
-import { getImgCode, sendCode } from '@/api/login'
+import { getImgCode, sendCode, userLogin } from '@/api/login'
+import { mapMutations } from 'vuex'
 export default {
   name: 'LoginIndex',
   methods: {
+    ...mapMutations('user', ['updataUserInfo']),
     onClickLeft () {
       this.$router.go(-1)
     },
@@ -46,22 +48,17 @@ export default {
       if (!this.valid()) return
       const res = await sendCode(this.telNumber, this.imgCode.key, this.iptCode)
       console.log(res)
-      if (res.status !== 200) {
-        this.$toast('验证码错误,请重新输入')
-        this.reloadCode()
-      } else {
-        this.$toast('短信发送成功')
-        this.flag = true
-        this.timer = setInterval(() => {
-          this.countdown--
-          if (this.countdown === 0) {
-            this.countdown = 60
-            this.flag = false
-            clearInterval(this.timer)
-            this.timer = null
-          }
-        }, 1000)
-      }
+      this.$toast('短信发送成功')
+      this.flag = true
+      this.timer = setInterval(() => {
+        this.countdown--
+        if (this.countdown === 0) {
+          this.countdown = 60
+          this.flag = false
+          clearInterval(this.timer)
+          this.timer = null
+        }
+      }, 1000)
     },
     valid () {
       if (!/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1589]))\d{8}$/.test(this.telNumber)) {
@@ -73,6 +70,18 @@ export default {
         return false
       }
       return true
+    },
+    async login () {
+      if (!this.valid()) return
+      if (!/^\d{6}$/.test(this.smsCode)) {
+        this.$toast('请输入6位短信验证码')
+        return
+      }
+      const res = await userLogin(this.telNumber, this.smsCode)
+      console.log(res)
+      this.$toast('登录成功')
+      this.updataUserInfo(res.data)
+      this.$router.push('/')
     }
   },
   async created () {
@@ -89,7 +98,8 @@ export default {
       flag: false,
       countdown: 60,
       timer: null,
-      telNumber: ''
+      telNumber: '',
+      smsCode: '' // 246810
     }
   }
 }
