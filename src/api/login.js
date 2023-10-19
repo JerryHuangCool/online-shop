@@ -18,9 +18,6 @@ export function sendCode (tel, key, imgCode) {
         mobile: tel
       }
 
-    },
-    headers: {
-      platform: 'H5'
     }
   })
 }

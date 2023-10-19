@@ -21,4 +21,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@tabbar-height: 13.33vw;
 </style>

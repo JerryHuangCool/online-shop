@@ -55,7 +55,6 @@ export default {
   },
   async created () {
     const res = await getHomeInfo()
-    console.log(res.data)
     this.swiperImg = res.data.pageData.items[1].data
     this.navList = res.data.pageData.items[3].data
     this.goodsList = res.data.pageData.items[6].data

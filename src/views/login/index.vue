@@ -81,7 +81,11 @@ export default {
       console.log(res)
       this.$toast('登录成功')
       this.updataUserInfo(res.data)
-      this.$router.push('/')
+      if (this.$route.query.backUrl) {
+        this.$router.replace(this.$route.query.backUrl)
+      } else {
+        this.$router.replace('/')
+      }
     }
   },
   async created () {
