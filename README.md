@@ -1,5 +1,5 @@
 # online-shop
-基于vue2开发
+基于vue2开发的在线商城项目
 ## Project setup
 ```
 npm install
