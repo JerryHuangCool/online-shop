@@ -13,6 +13,11 @@ export default {
       setInfo(obj)
     }
   },
-  actions: {},
+  actions: {
+    logout (context) {
+      context.commit('updataUserInfo', {})
+      context.commit('cart/getCart', {}, { root: true })
+    }
+  },
   getters: {}
 }

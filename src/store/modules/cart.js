@@ -6,7 +6,8 @@ export default {
   state () {
     return {
       cartList: [],
-      cartTotal: 0
+      cartTotal: 0,
+      cartGoodsNum: 0
     }
   },
   mutations: {
@@ -24,6 +25,9 @@ export default {
       state.cartList.forEach(item => {
         item.isCheck = checkAll
       })
+    },
+    setCartGoodsNum (state, num) {
+      state.cartGoodsNum = num
     }
   },
   actions: {

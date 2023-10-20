@@ -13,7 +13,7 @@
 
     <!-- 购物车列表 -->
     <div class="cart-list">
-      <div class="cart-item" v-for="item in cartList" :key="item.goods_id">
+      <div class="cart-item" v-for="item in cartList" :key="item.goods_id" @click="goDetail(item.goods_id)">
         <van-checkbox :value="item.isCheck" @click="toggleCheck(item.goods_id)"></van-checkbox>
         <div class="show">
           <img :src="item.goods.goods_image" alt="">
@@ -39,7 +39,7 @@
           <span>合计：</span>
           <span>¥ <i class="totalPrice">{{totalPrice}}</i></span>
         </div>
-        <div v-if="!isEditor" class="goPay" :class="{disabled: totalCount === 0}">结算({{totalCount}})</div>
+        <div v-if="!isEditor" class="goPay" :class="{disabled: totalCount === 0}" @click="goPay">结算({{totalCount}})</div>
         <div v-else class="delete" :class="{disabled: totalCount === 0}" @click="deletegoods">删除</div>
       </div>
     </div>
@@ -88,6 +88,22 @@ export default {
       })
       this.$store.dispatch('cart/deleteGoods', cartIds)
       this.isEditor = !this.isEditor
+    },
+    goPay () {
+      if (this.selCartList.length > 0) {
+        this.$router.push({
+          path: '/pay',
+          query: {
+            mode: 'cart',
+            cartIds: this.selCartList.map(item => item.id).join(',')
+          }
+        })
+      }
+    },
+    goDetail (id) {
+      this.$router.push({
+        path: `/detail/${id}`
+      })
     }
   },
   computed: {
@@ -113,6 +129,9 @@ export default {
     },
     isLogin () {
       return this.$store.getters.token
+    },
+    selCartList () {
+      return this.cartList.filter(item => item.isCheck === true)
     }
   },
   data () {

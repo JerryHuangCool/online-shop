@@ -100,7 +100,7 @@
         </div>
         <div class="showbtn" v-if="detail.stock_total !== 0">
           <div class="btn" v-if="mode==='cart'" @click="addCart">加入购物车</div>
-          <div class="btn now" v-else>立刻购买</div>
+          <div class="btn now" v-else @click="goBuyNow">立刻购买</div>
         </div>
         <div class="btn-none" v-else>该商品已抢完</div>
       </div>
@@ -112,8 +112,10 @@
 import { getGoodsDetail, getGoodsComment } from '@/api/goods'
 import CountBox from '@/components/CountBox.vue'
 import { addToCart } from '@/api/cart'
+import loginConfirm from '@/mixins/loginConfirm'
 export default {
   name: 'GoodsIndex',
+  mixins: [loginConfirm],
   data () {
     return {
       images: [
@@ -142,26 +144,30 @@ export default {
       this.showPannel = true
     },
     async addCart () {
-      if (!this.$store.getters.token) {
-        this.$dialog.confirm({
-          confirmButtonText: '去登录',
-          cancelButtonText: '再逛逛',
-          title: '温馨提示',
-          message: '此时需要先登录才能继续操作哦'
-        }).then(() => {
-          this.$router.replace({
-            path: '/login',
-            query: {
-              backUrl: this.$route.fullPath
-            }
-          })
-        }).catch(() => {})
+      if (this.loginConfirm()) {
+        this.showPannel = false
         return
       }
       const res = await addToCart(this.goodId, this.goodsNum, this.detail.skuList[0].goods_sku_id)
-      this.cartTotal = res.data.cartTotal
+      this.$store.commit('cart/setCartGoodsNum', res.data.cartTotal)
+      this.cartTotal = this.$store.state.cart.cartGoodsNum
       this.$toast('加入购物车成功')
       this.showPannel = false
+    },
+    goBuyNow () {
+      if (this.loginConfirm()) {
+        this.showPannel = false
+        return
+      }
+      this.$router.push({
+        path: '/pay',
+        query: {
+          mode: 'buyNow',
+          goodsId: this.goodId,
+          goodsSkuId: this.detail.skuList[0].goods_sku_id,
+          goodsNum: this.goodsNum
+        }
+      })
     }
   },
   async created () {
@@ -170,6 +176,7 @@ export default {
     this.images = res.data.detail.goods_images
     const res2 = await getGoodsComment(this.goodId)
     this.comment = res2.data
+    this.cartTotal = this.$store.state.cart.cartGoodsNum
   },
   computed: {
     goodId () {
