@@ -6,30 +6,34 @@ export function getAddressList () {
   })
 }
 
-export function addAddress () {
+export function addAddress (obj) {
   return request({
     url: '/address/add',
     method: 'post',
     data: {
-      form: {
-        name: 'jerry',
-        phone: '17396240155',
-        region: [
-          {
-            value: 782,
-            label: '上海'
-          },
-          {
-            value: 783,
-            label: '上海市'
-          },
-          {
-            value: 785,
-            label: '徐汇区'
-          }
-        ],
-        detail: '北京路1号楼8888室'
-      }
+      form: obj
     }
+  })
+}
+
+export function getRegion () {
+  return request({
+    url: '/region/tree'
+  })
+}
+
+export function setDefaultAddress (id) {
+  return request({
+    url: '/address/setDefault',
+    method: 'post',
+    data: {
+      addressId: id
+    }
+  })
+}
+
+export function getDefaultAddress () {
+  return request({
+    url: '/address/defaultId'
   })
 }

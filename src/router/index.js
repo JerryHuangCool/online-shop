@@ -13,7 +13,8 @@ const Pay = () => import('@/views/pay')
 const Goodsdetail = () => import('@/views/goodsdetail')
 const Order = () => import('@/views/order')
 const List = () => import('@/views/search/list')
-
+const Address = () => import('@/views/address')
+const AddressEdit = () => import('@/views/address/edit')
 Vue.use(VueRouter)
 
 const routes = [
@@ -34,7 +35,9 @@ const routes = [
   { path: '/searchlist', component: List },
   { path: '/pay', component: Pay },
   { path: '/detail/:id', component: Goodsdetail },
-  { path: '/order', component: Order }
+  { path: '/order', component: Order },
+  { path: '/address', component: Address },
+  { path: '/addressedit', component: AddressEdit }
 ]
 
 const router = new VueRouter({
