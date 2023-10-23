@@ -53,15 +53,15 @@
   <div style="margin: 16px; margin-top: 30px;">
     <van-button round block type="info" color="#002fa7" native-type="submit">提交</van-button>
   </div>
-  <div style="margin: 16px;">
-    <van-button round block  type="danger">删除</van-button>
+  <div style="margin: 16px;" v-if="isDelete">
+    <van-button round block  type="danger" @click="deleteAddress">删除</van-button>
   </div>
 </van-form>
   </div>
 </template>
 
 <script>
-import { addAddress, getAddressList, setDefaultAddress } from '@/api/address'
+import { addAddress, getAddressList, setDefaultAddress, getAddressById, updateAddress, deleteAddress } from '@/api/address'
 export default {
   name: 'AddressEdit',
   data () {
@@ -76,7 +76,8 @@ export default {
       addressId: [],
       columns: [],
       isDefalut: false,
-      detail: ''
+      detail: '',
+      isDelete: false
 
     }
   },
@@ -88,6 +89,7 @@ export default {
         return pre + next
       }, '')
       this.addressArr = value
+      this.addressId = []
       this.addressId.push(this.columns[index[0]].id)
       this.addressId.push(this.columns[index[0]].children[index[1]].id)
       this.addressId.push(this.columns[index[0]].children[index[1]].children[index[2]].id)
@@ -109,18 +111,54 @@ export default {
           label: this.addressArr[2]
         }]
       }
-      const res = await addAddress(obj)
+      if (this.$route.params.id) {
+        await this.editAddress(this.$route.params.id, obj)
+      } else {
+        const res = await addAddress(obj)
+        if (res.status === 200 && this.isDefalut === true) {
+          const res1 = await getAddressList()
+          const id = res1.data.list[res1.data.list.length - 1].address_id
+          await setDefaultAddress(id)
+        }
+        this.$toast.success('新增地址成功')
+        this.$router.replace('/address')
+      }
+    },
+    async editAddress (id, obj) {
+      const res = await updateAddress(id, obj)
       if (res.status === 200 && this.isDefalut === true) {
-        const res1 = await getAddressList()
-        const id = res1.data.list[res1.data.list.length - 1].address_id
         await setDefaultAddress(id)
       }
-      this.$toast.success('新增地址成功')
+      this.$toast.success('更新地址成功')
       this.$router.replace('/address')
+    },
+    async deleteAddress () {
+      await deleteAddress(this.$route.params.id)
+      if (+this.$route.params.id === this.$store.state.address.defaultId) {
+        const id = this.$store.state.address.addressList[1].id
+        await setDefaultAddress(id)
+      }
+      this.$toast.success('删除地址成功')
     }
   },
   async created () {
     await this.$store.dispatch('address/getRegionList')
+    if (this.$route.params.id) {
+      const res = await getAddressById(this.$route.params.id)
+      const item = res.data.detail
+      this.title = '编辑地址'
+      this.isDelete = true
+      this.name = item.name
+      this.phone = item.phone
+      this.address = item.region.province + item.region.city + item.region.region
+      this.detail = item.detail
+      this.addressId[0] = item.province_id
+      this.addressId[1] = item.city_id
+      this.addressId[2] = item.region_id
+      if (this.$store.state.address.defaultId === +this.$route.params.id) {
+        this.isDefalut = true
+      }
+    }
     this.columns = this.$store.getters['address/PickerColumn']
   }
 }

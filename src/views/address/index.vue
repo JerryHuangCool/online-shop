@@ -11,6 +11,7 @@
   default-tag-text="默认"
   @select="selectAddress"
   @add="onAdd"
+  @edit="goToEdit"
 />
   </div>
 </template>
@@ -38,6 +39,11 @@ export default {
     },
     onAdd () {
       this.$router.push('/addressedit')
+    },
+    goToEdit (item) {
+      this.$router.push({
+        path: `/addressedit/${item.id}`
+      })
     }
   }
 }

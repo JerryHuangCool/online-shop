@@ -3,7 +3,7 @@
     <van-nav-bar fixed title="订单结算台" left-arrow @click-left="$router.go(-1)" />
 
     <!-- 地址相关 -->
-    <div class="address">
+    <div class="address" @click="$router.push('/address')">
 
       <div class="left-icon">
         <van-icon name="logistics" />

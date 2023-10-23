@@ -37,3 +37,33 @@ export function getDefaultAddress () {
     url: '/address/defaultId'
   })
 }
+
+export function getAddressById (id) {
+  return request({
+    url: '/address/detail',
+    params: {
+      addressId: id
+    }
+  })
+}
+
+export function updateAddress (id, obj) {
+  return request({
+    url: '/address/edit',
+    method: 'post',
+    data: {
+      addressId: id,
+      form: obj
+    }
+  })
+}
+
+export function deleteAddress (id) {
+  return request({
+    url: '/address/remove',
+    method: 'post',
+    data: {
+      addressId: id
+    }
+  })
+}

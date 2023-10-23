@@ -22,7 +22,6 @@ export default {
   actions: {
     async getAddress (context) {
       const res = await getAddressList()
-      console.log(res)
       const list = []
       res.data.list.forEach(item => {
         const obj = {
